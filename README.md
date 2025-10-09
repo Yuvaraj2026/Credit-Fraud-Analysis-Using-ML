@@ -24,5 +24,20 @@ XGBoost Classifier and LightGBM Classifier where imbalance was handled using sca
 Each model was trained using GridSearchCV for hyperparameter optimization and 3-fold cross-validation.
 Since we are using GridSearch CV, the choices of hyperparameters were chosen based on commonly used values and tuned to maximize the Average Precision (AUPRC) score.
 
+Results:
+
+==================== MODEL COMPARISON ====================
+
+                Model                                        Best Params  \
+1             XGBoost  {'colsample_bytree': 0.8, 'learning_rate': 0.1...   
+2            LightGBM  {'learning_rate': 0.01, 'max_depth': 7, 'n_est...   
+0  LogisticRegression  {'C': 10, 'penalty': 'l1', 'solver': 'liblinear'}   
+
+      AUPRC  
+1  0.880530  
+2  0.810556  
+0  0.730258  
+
+ Best performing model: XGBoost
 
 
