@@ -1,43 +1,35 @@
-The project aims to detect fraudulent transactions in a highly imbalanced credit card dataset using machine learning models. The workflow includes data preprocessing, handling imbalance, model training, hyperparameter tuning, and performance evaluation.
+This project compares three classifiers: Logistic Regression, XGBoost and LightGBM. Each is tuned with cross-validated grid search and evaluated with help of AUPRC. XGBoost performed best on the held-out test set.
 
-The link of the kaggle dataset is: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud 
+Details about Dataset:
+[Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) (Kaggle / ULB Machine Learning Group)
+1. 284,807 transactions made by European cardholders
+2. 492 frauds (0.173% of all transactions)
+3. Features V1-V28 are PCA-transformed (anonymised), plus Amount
+4. No missing values
 
-1. Exploratory Data Analysis:
+My approach:
+1. Preprocessing: dropped 'Time' and separated the 'Class' target.
+2. Split: 80/20 train/test split, stratified to preserve the fraud ratio.
+3. Imbalance Handling: 'class_weight="balanced"' for Logistic Regression and 'scale_pos_weight' for XGBoost and LightGBM.
+4. Scaling: StandardScaler inside a scikit-learn Pipeline for Logistic Regression, so scaling is fitted only on training folds (no data leakage).
+5. Tuning: GridSearchCV with 5-fold StratifiedKFold, optimising Average Precision (AUPRC).
+6. Evaluation: AUPRC on the held-out test set.
 
-No missing values were found. We discovered correlation between features using a Pearson heatmap. Feature distributions were analyzed using KDE plots to compare fraudulent and non-fraudulent transactions.
+Why did we use AUPRC?
 
-2. Data Preprocessing:
-
-We dropped the Time column as it isn't really predictive for fraudulent transcactions. We Split the data into training and testing sets (80:20) with stratification to preserve the class ratio. Then we standarised the Amount feature using StandardScaler (fitting on the training dataset). The rest of th variables were PCA transformed and hence, were already standardised. 
-
-3. Handling Imbalanced Data
-
-Since the dataset is extremely imbalanced, with fraud cases representing less than 0.2% of total transactions, to address this, the SMOTE (Synthetic Minority Oversampling Technique) method was applied on the training data to create a balanced dataset for logistic regression that does not natively handle class imbalance.
-
-4. Model Building
-
-Three machine learning algorithms were implemented:
-
-Logistic Regression with L1 and L2 loss functions, 
-XGBoost Classifier and LightGBM Classifier where imbalance was handled using scale_pos_weight.
-
-Each model was trained using GridSearchCV for hyperparameter optimization and 3-fold cross-validation.
-Since we are using GridSearch CV, the choices of hyperparameters were chosen based on commonly used values and tuned to maximize the Average Precision (AUPRC) score.
+With 99.8% legitimate transactions, a model that always predicts "not fraud" scores 99.8% accuracy while catching no fraud. Average Precision (area under the precision-recall curve) measures how well a model finds the rare positive class.
 
 Results:
 
-==================== MODEL COMPARISON ====================
+| Model | CV AUPRC | Test AUPRC |
 
-                Model                                        Best Params  \
-1             XGBoost  {'colsample_bytree': 0.8, 'learning_rate': 0.1...   
-2            LightGBM  {'learning_rate': 0.01, 'max_depth': 7, 'n_est...   
-0  LogisticRegression  {'C': 10, 'penalty': 'l1', 'solver': 'liblinear'}   
+| XGBoost | 0.853 | 0.861 |
+| LightGBM | 0.788 | 0.790 |
+| Logistic Regression | 0.757 | 0.710 |
 
-      AUPRC  
-1  0.880530  
-2  0.810556  
-0  0.730258  
+XGBoost achieved the highest AUPRC and outperformed the logistic regression baseline by 0.15.
 
- Best performing model: XGBoost
+Author:
+Yuvaraj Mandal, www.linkedin.com/in/yuvaraj-mandal-995b45217, yuvarajmandal02@gmail.com
 
 
